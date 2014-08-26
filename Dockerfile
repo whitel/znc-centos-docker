@@ -13,11 +13,10 @@ RUN yum -y install znc znc-extra; yum clean all;
 RUN mkdir /znc-data
 RUN chown znc:znc /znc-data
 RUN chmod 777 /znc-data
-RUN echo workround > /znc-data/.workaround
+#RUN echo workround > /znc-data/.workaround
 
 USER 	znc
-EXPOSE 	6660 6667
+EXPOSE 	8080 6667 6697
 VOLUME	["/znc-data"]
-#ENTRYPOINT  ["znc --makeconf"]
 
 CMD ["znc -f -d /znc-data"]

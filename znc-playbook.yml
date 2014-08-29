@@ -1,0 +1,27 @@
+---
+- hosts: local
+  remote_user: root
+  tasks:
+
+  - name: upgrade all packages
+    yum: name=* state=latest
+
+  - name: install ZNC
+    yum: name={{item}} state=latest
+    with_items:
+      - znc
+      - znc-devel
+      - znc-modperl
+      - znc-modtcl
+
+  - name: cleaning task for yum
+    command: /usr/bin/yum clean all
+
+  - name: delete yum cache files
+    file: path=/var/cache/{{ item }} state=absent
+    with_items:
+      - yum
+
+  - name: setup the znc data dir for the configuration
+    file: path=/znc-data owner=znc group=znc mode=777 state=directory
+

@@ -1,23 +1,20 @@
 # This is a docker image for a ZNC IRC bouncer service
-FROM centos:centos7
+FROM centos:centos6
 MAINTAINER Jeremy Brown <jeremy@tenfourty.com>
 
-# let things know they are running in a container
-ENV container docker
-
-# run a full update
-RUN yum -y update; yum clean all
-
 # install the EPEL repository
-RUN su -c 'rpm -Uvh http://www.mirrorservice.org/sites/dl.fedoraproject.org/pub/epel/beta/7/x86_64/epel-release-7-0.2.noarch.rpm'
+RUN su -c 'rpm -Uvh http://www.mirrorservice.org/sites/dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm'
 
-# install ZNC
-RUN yum -y install znc znc-extra; yum clean all;
+# install ansible
+RUN yum -y install ansible; yum clean all;
 
-# setup the znc data dir for the configs
-RUN mkdir /znc-data
-RUN chown znc:znc /znc-data
-RUN chmod 777 /znc-data
+# add our inventory file to the local machine
+ADD ansible-inventory /etc/ansible/hosts
+
+# use ansible to install znc
+ADD znc-playbook.yml /tmp/znc-playbook.yml
+RUN ansible-playbook /tmp/znc-playbook.yml -c local
+RUN rm /tmp/znc-playbook.yml
 
 # user is znc and ports
 USER 	znc

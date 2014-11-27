@@ -16,10 +16,16 @@ ADD znc-playbook.yml /tmp/znc-playbook.yml
 RUN ansible-playbook /tmp/znc-playbook.yml -c local
 RUN rm /tmp/znc-playbook.yml
 
+ADD znc.conf /tmp/znc.conf
+ADD znc.pem /tmp/znc.pem
+ADD run-znc.sh /run-znc.sh
+RUN chown znc:znc /tmp/znc.conf /tmp/znc.pem /run-znc.sh
+
 # user is znc and ports
 USER 	znc
 EXPOSE 	8080 6667 6697
 VOLUME	["/znc-data"]
 
 # this command starts znc and points it at the mounted volume for it's config
-CMD znc -f -d /znc-data
+CMD /run-znc.sh
+
